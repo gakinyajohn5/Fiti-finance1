@@ -31,18 +31,35 @@ class MainActivity : FragmentActivity() {
             val app = application as FitiApplication
             val scope = rememberCoroutineScope()
 
-            // ---- App Lock: re-lock every time the app leaves the foreground ----
+            // ---- App Lock: re-lock after leaving the foreground, honoring the auto-lock delay ----
             val lockEnabled by app.securityPreferences.isLockEnabled.collectAsState(initial = false)
+            val appSettings by app.appPreferences.state.collectAsState(
+                initial = com.fitifinance.comrade.settings.AppSettingsState()
+            )
             var isUnlocked by rememberSaveable { mutableStateOf(false) }
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner, lockEnabled) {
+                var lockJob: kotlinx.coroutines.Job? = null
                 val observer = LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_STOP && lockEnabled) {
-                        isUnlocked = false
+                    when (event) {
+                        Lifecycle.Event.ON_STOP -> {
+                            if (lockEnabled) {
+                                val delayMs = appSettings.autoLockDelaySeconds * 1000L
+                                lockJob = scope.launch {
+                                    if (delayMs > 0) kotlinx.coroutines.delay(delayMs)
+                                    isUnlocked = false
+                                }
+                            }
+                        }
+                        Lifecycle.Event.ON_START -> lockJob?.cancel()
+                        else -> {}
                     }
                 }
                 lifecycleOwner.lifecycle.addObserver(observer)
-                onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                    lockJob?.cancel()
+                }
             }
 
             // ---- Runtime permissions: SMS parser + location context engine ----

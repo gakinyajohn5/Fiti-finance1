@@ -21,6 +21,12 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE timestampMillis BETWEEN :startMillis AND :endMillis ORDER BY timestampMillis DESC")
     fun observeBetween(startMillis: Long, endMillis: Long): Flow<List<Transaction>>
 
+    @Query("SELECT * FROM transactions ORDER BY timestampMillis DESC")
+    suspend fun getAllOnce(): List<Transaction>
+
+    @Query("DELETE FROM transactions")
+    suspend fun deleteAll()
+
     @Query("SELECT COALESCE(SUM(amountKes), 0) FROM transactions WHERE category = :category AND timestampMillis BETWEEN :startMillis AND :endMillis")
     suspend fun totalForCategoryBetween(category: String, startMillis: Long, endMillis: Long): Double
 

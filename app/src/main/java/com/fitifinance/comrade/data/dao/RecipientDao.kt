@@ -17,4 +17,10 @@ interface RecipientDao {
 
     @Query("SELECT * FROM recipients ORDER BY fullName ASC")
     fun observeAll(): Flow<List<Recipient>>
+
+    @Query("DELETE FROM recipients WHERE fullName = :name")
+    suspend fun deleteByName(name: String)
+
+    @Query("DELETE FROM recipients")
+    suspend fun deleteAll()
 }

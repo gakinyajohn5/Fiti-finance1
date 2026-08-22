@@ -16,7 +16,7 @@ class FitiViewModelFactory(private val app: FitiApplication) : ViewModelProvider
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when (modelClass) {
             OnboardingViewModel::class.java -> OnboardingViewModel(app.repository) as T
-            DashboardViewModel::class.java -> DashboardViewModel(app.repository, app.locationContextEngine) as T
+            DashboardViewModel::class.java -> DashboardViewModel(app.repository, app.locationContextEngine, app.appPreferences) as T
             MealsViewModel::class.java -> MealsViewModel(app.repository) as T
             WeeklyMealPlanViewModel::class.java -> WeeklyMealPlanViewModel(app.repository) as T
             NightOutViewModel::class.java -> NightOutViewModel(app.repository) as T
@@ -24,6 +24,7 @@ class FitiViewModelFactory(private val app: FitiApplication) : ViewModelProvider
             TransactionsViewModel::class.java -> TransactionsViewModel(app.repository) as T
             LockViewModel::class.java -> LockViewModel(app.securityPreferences) as T
             SpendingChartViewModel::class.java -> SpendingChartViewModel(app.repository) as T
+            SettingsViewModel::class.java -> SettingsViewModel(app.repository, app.appPreferences) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

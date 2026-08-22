@@ -22,7 +22,7 @@ fun DashboardScreen(
     onOpenSavings: () -> Unit,
     onOpenTransactions: () -> Unit,
     onOpenSpendingChart: () -> Unit,
-    onOpenSecuritySettings: () -> Unit
+    onOpenSettings: () -> Unit
 ) {
     val vm: DashboardViewModel = fitiViewModel()
     val state by vm.uiState.collectAsState()
@@ -45,8 +45,8 @@ fun DashboardScreen(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            IconButton(onClick = onOpenSecuritySettings) {
-                Icon(Icons.Filled.Lock, contentDescription = "App Lock settings")
+            IconButton(onClick = onOpenSettings) {
+                Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
         }
 

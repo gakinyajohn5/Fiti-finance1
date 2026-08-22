@@ -16,4 +16,7 @@ interface MealLogDao {
 
     @Query("SELECT COALESCE(SUM(costKes), 0) FROM meal_logs WHERE timestampMillis BETWEEN :startMillis AND :endMillis")
     fun observeTotalSpentBetween(startMillis: Long, endMillis: Long): Flow<Double>
+
+    @Query("DELETE FROM meal_logs")
+    suspend fun deleteAll()
 }

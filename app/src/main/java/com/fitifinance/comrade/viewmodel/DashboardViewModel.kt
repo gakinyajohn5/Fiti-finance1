@@ -6,9 +6,12 @@ import com.fitifinance.comrade.data.entity.UserProfile
 import com.fitifinance.comrade.engine.LocationContextEngine
 import com.fitifinance.comrade.engine.ThemeMode
 import com.fitifinance.comrade.repository.FinanceRepository
+import com.fitifinance.comrade.settings.AppPreferences
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.ZoneId
@@ -23,10 +26,22 @@ data class DashboardState(
 
 class DashboardViewModel(
     private val repository: FinanceRepository,
-    private val locationEngine: LocationContextEngine
+    private val locationEngine: LocationContextEngine,
+    private val appPreferences: AppPreferences
 ) : ViewModel() {
 
     val themeMode: StateFlow<ThemeMode> = locationEngine.currentMode
+
+    init {
+        // Honors a manual "Appearance" override from Settings instead of location detection.
+        appPreferences.state
+            .onEach { settings ->
+                if (!settings.themeAutoMode) {
+                    locationEngine.forceMode(settings.manualThemeMode)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
 
     private fun startOfDayMillis(): Long =
         LocalDate.now(ZoneId.systemDefault()).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()

@@ -15,12 +15,15 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.fitifinance.comrade.security.BiometricAuthenticator
 import com.fitifinance.comrade.viewmodel.LockViewModel
+import com.fitifinance.comrade.viewmodel.SettingsViewModel
 import com.fitifinance.comrade.viewmodel.fitiViewModel
 
 @Composable
 fun SecuritySettingsScreen(onBack: () -> Unit) {
     val vm: LockViewModel = fitiViewModel()
     val state by vm.securityState.collectAsState()
+    val settingsVm: SettingsViewModel = fitiViewModel()
+    val settingsState by settingsVm.uiState.collectAsState()
     val context = LocalContext.current
     val activity = context as? FragmentActivity
     val biometricHardwareAvailable = activity?.let { BiometricAuthenticator.isAvailable(it) } ?: false
@@ -89,6 +92,44 @@ fun SecuritySettingsScreen(onBack: () -> Unit) {
                         enabled = state.lockEnabled && biometricHardwareAvailable,
                         onCheckedChange = { vm.setBiometricEnabled(it) }
                     )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(20.dp))
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Hide amounts", style = MaterialTheme.typography.titleMedium)
+                        Text("Mask KES figures behind a tap, e.g. over someone's shoulder", style = MaterialTheme.typography.bodySmall)
+                    }
+                    Switch(
+                        checked = settingsState.appSettings.hideAmounts,
+                        onCheckedChange = { settingsVm.setHideAmounts(it) }
+                    )
+                }
+
+                Divider(Modifier.padding(vertical = 8.dp))
+
+                Text("Auto-lock delay", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "How long the app stays unlocked after you leave it",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(0 to "Immediately", 30 to "30s", 60 to "1 min", 300 to "5 min").forEach { (seconds, label) ->
+                        FilterChip(
+                            selected = settingsState.appSettings.autoLockDelaySeconds == seconds,
+                            onClick = { settingsVm.setAutoLockDelaySeconds(seconds) },
+                            label = { Text(label) }
+                        )
+                    }
                 }
             }
         }

@@ -17,6 +17,13 @@ import com.fitifinance.comrade.ui.nightout.NightOutScreen
 import com.fitifinance.comrade.ui.onboarding.OnboardingWizard
 import com.fitifinance.comrade.ui.savings.SavingsJarsScreen
 import com.fitifinance.comrade.ui.security.SecuritySettingsScreen
+import com.fitifinance.comrade.ui.settings.AboutScreen
+import com.fitifinance.comrade.ui.settings.AppearanceSettingsScreen
+import com.fitifinance.comrade.ui.settings.BudgetSettingsScreen
+import com.fitifinance.comrade.ui.settings.DataPrivacyScreen
+import com.fitifinance.comrade.ui.settings.NotificationSettingsScreen
+import com.fitifinance.comrade.ui.settings.ProfileSettingsScreen
+import com.fitifinance.comrade.ui.settings.SettingsHubScreen
 import com.fitifinance.comrade.ui.transactions.TransactionsScreen
 
 /** Top-level destinations, reached via the outer NavHost (full-screen pushes). */
@@ -26,7 +33,14 @@ object Routes {
     const val WEEKLY_MEAL_PLAN = "weekly_meal_plan"
     const val TRANSACTIONS = "transactions"
     const val SPENDING_CHART = "spending_chart"
+    const val SETTINGS_HUB = "settings_hub"
     const val SECURITY_SETTINGS = "security_settings"
+    const val BUDGET_SETTINGS = "budget_settings"
+    const val NOTIFICATION_SETTINGS = "notification_settings"
+    const val DATA_PRIVACY_SETTINGS = "data_privacy_settings"
+    const val APPEARANCE_SETTINGS = "appearance_settings"
+    const val PROFILE_SETTINGS = "profile_settings"
+    const val ABOUT = "about"
 }
 
 /** The four tabs living behind the bottom nav bar, on their own inner NavHost. */
@@ -56,7 +70,7 @@ fun FitiNavGraph(startDestination: String) {
                 onOpenWeeklyPlan = { navController.navigate(Routes.WEEKLY_MEAL_PLAN) },
                 onOpenTransactions = { navController.navigate(Routes.TRANSACTIONS) },
                 onOpenSpendingChart = { navController.navigate(Routes.SPENDING_CHART) },
-                onOpenSecuritySettings = { navController.navigate(Routes.SECURITY_SETTINGS) }
+                onOpenSettings = { navController.navigate(Routes.SETTINGS_HUB) }
             )
         }
 
@@ -72,8 +86,45 @@ fun FitiNavGraph(startDestination: String) {
             SpendingChartScreen(onBack = { navController.popBackStack() })
         }
 
+        composable(Routes.SETTINGS_HUB) {
+            SettingsHubScreen(
+                onBack = { navController.popBackStack() },
+                onOpenAppLock = { navController.navigate(Routes.SECURITY_SETTINGS) },
+                onOpenBudgets = { navController.navigate(Routes.BUDGET_SETTINGS) },
+                onOpenNotifications = { navController.navigate(Routes.NOTIFICATION_SETTINGS) },
+                onOpenDataPrivacy = { navController.navigate(Routes.DATA_PRIVACY_SETTINGS) },
+                onOpenAppearance = { navController.navigate(Routes.APPEARANCE_SETTINGS) },
+                onOpenProfile = { navController.navigate(Routes.PROFILE_SETTINGS) },
+                onOpenAbout = { navController.navigate(Routes.ABOUT) }
+            )
+        }
+
         composable(Routes.SECURITY_SETTINGS) {
             SecuritySettingsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.BUDGET_SETTINGS) {
+            BudgetSettingsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.NOTIFICATION_SETTINGS) {
+            NotificationSettingsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.DATA_PRIVACY_SETTINGS) {
+            DataPrivacyScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.APPEARANCE_SETTINGS) {
+            AppearanceSettingsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.PROFILE_SETTINGS) {
+            ProfileSettingsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.ABOUT) {
+            AboutScreen(onBack = { navController.popBackStack() })
         }
     }
 }
@@ -89,7 +140,7 @@ private fun MainTabScaffold(
     onOpenWeeklyPlan: () -> Unit,
     onOpenTransactions: () -> Unit,
     onOpenSpendingChart: () -> Unit,
-    onOpenSecuritySettings: () -> Unit
+    onOpenSettings: () -> Unit
 ) {
     val tabNavController = rememberNavController()
 
@@ -108,7 +159,7 @@ private fun MainTabScaffold(
                     onOpenSavings = { tabNavController.navigate(MainTabs.SAVINGS) },
                     onOpenTransactions = onOpenTransactions,
                     onOpenSpendingChart = onOpenSpendingChart,
-                    onOpenSecuritySettings = onOpenSecuritySettings
+                    onOpenSettings = onOpenSettings
                 )
             }
 

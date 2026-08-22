@@ -59,6 +59,17 @@
             android:name=".engine.DamageControlAlarmReceiver"
             android:exported="false" />
 
+        <!-- Lets "Export CSV" hand a transactions file to another app (Mail, Drive, etc.) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

@@ -20,4 +20,7 @@ interface SavingsJarDao {
 
     @Query("SELECT * FROM savings_jars WHERE isActive = 1 ORDER BY priority ASC")
     suspend fun getActiveJars(): List<SavingsJar>
+
+    @Query("DELETE FROM savings_jars")
+    suspend fun deleteAll()
 }

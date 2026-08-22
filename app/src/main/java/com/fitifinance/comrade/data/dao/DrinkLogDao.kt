@@ -22,4 +22,7 @@ interface DrinkLogDao {
 
     @Query("SELECT COALESCE(SUM(pendingReceivableKes), 0) FROM drink_logs")
     fun observeTotalPendingReceivables(): Flow<Double>
+
+    @Query("DELETE FROM drink_logs")
+    suspend fun deleteAll()
 }
