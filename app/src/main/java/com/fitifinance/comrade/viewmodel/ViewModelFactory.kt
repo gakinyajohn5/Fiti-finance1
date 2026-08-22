@@ -18,6 +18,7 @@ class FitiViewModelFactory(private val app: FitiApplication) : ViewModelProvider
             OnboardingViewModel::class.java -> OnboardingViewModel(app.repository) as T
             DashboardViewModel::class.java -> DashboardViewModel(app.repository, app.locationContextEngine) as T
             MealsViewModel::class.java -> MealsViewModel(app.repository) as T
+            WeeklyMealPlanViewModel::class.java -> WeeklyMealPlanViewModel(app.repository) as T
             NightOutViewModel::class.java -> NightOutViewModel(app.repository) as T
             SavingsViewModel::class.java -> SavingsViewModel(app.repository, app.adviceEngine) as T
             TransactionsViewModel::class.java -> TransactionsViewModel(app.repository) as T

@@ -45,16 +45,20 @@ class MealsViewModel(private val repository: FinanceRepository) : ViewModel() {
     ) { profile, spend, manualAdj, feedback ->
         val window = MealTimeEngine.currentWindow()
         val allSuggestions = FoodDatabase.forWindow(window)
+            .filter { it.allergens.none(profile.allergenSet::contains) }
+            .filterNot { profile.hatedFoodIdSet.contains(it.id) }
         val filtered = if (!profile.canCook) {
             // Hostel, no cooking: campus mess, kibanda, ready-to-eat street snacks only.
             allSuggestions.filter { it.vendorTag != "Room / Kettle" }
         } else allSuggestions
 
+        val sorted = filtered.sortedByDescending { profile.lovedFoodIdSet.contains(it.id) }
+
         val totalSpend = spend + manualAdj
         MealsState(
             profile = profile,
             currentWindowLabel = MealTimeEngine.windowLabel(window),
-            suggestions = filtered,
+            suggestions = sorted,
             todaySpendKes = totalSpend,
             remainingAllowanceKes = (profile.dailyMealBudgetKes - totalSpend).coerceAtLeast(0.0),
             lastCommandFeedback = feedback

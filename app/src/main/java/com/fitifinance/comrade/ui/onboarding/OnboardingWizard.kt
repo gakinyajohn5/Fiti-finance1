@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fitifinance.comrade.data.entity.*
+import com.fitifinance.comrade.engine.AllergenTag
 import com.fitifinance.comrade.engine.DrinkDatabase
+import com.fitifinance.comrade.engine.FoodDatabase
 import com.fitifinance.comrade.viewmodel.OnboardingViewModel
 import com.fitifinance.comrade.viewmodel.fitiViewModel
 
@@ -45,6 +47,7 @@ fun OnboardingWizard(onComplete: () -> Unit) {
                 2 -> RoommateStep(profile, vm::setRoommateStatus)
                 3 -> MealStyleStep(profile, vm::setMealStyle)
                 4 -> PartyProfilingStep(profile, vm)
+                5 -> FoodPreferencesStep(profile, vm)
             }
         }
     }
@@ -214,6 +217,78 @@ private fun PartyProfilingStep(profile: UserProfile, vm: OnboardingViewModel) {
                     label = { Text(drink.name) }
                 )
             }
+        }
+    }
+}
+
+// ---- Step 5: Food Preferences & Allergies ----
+@Composable
+private fun FoodPreferencesStep(profile: UserProfile, vm: OnboardingViewModel) {
+    StepHeader(
+        "What do you love, hate & need to avoid?",
+        "Your weekly meal planner only ever suggests foods you love, never what you hate, and NEVER what you're allergic to."
+    )
+
+    Text("Allergies — hard blocked everywhere", style = MaterialTheme.typography.titleMedium)
+    Spacer(Modifier.height(8.dp))
+    val allergens = profile.allergenSet
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        listOf(
+            AllergenTag.DAIRY to "Dairy", AllergenTag.GLUTEN to "Gluten", AllergenTag.EGGS to "Eggs",
+            AllergenTag.NUTS to "Nuts"
+        ).forEach { (tag, label) ->
+            FilterChip(selected = allergens.contains(tag), onClick = { vm.toggleAllergy(tag) }, label = { Text(label) })
+        }
+    }
+    Spacer(Modifier.height(8.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        listOf(
+            AllergenTag.SOY to "Soy", AllergenTag.SEAFOOD to "Seafood", AllergenTag.RED_MEAT to "Red Meat"
+        ).forEach { (tag, label) ->
+            FilterChip(selected = allergens.contains(tag), onClick = { vm.toggleAllergy(tag) }, label = { Text(label) })
+        }
+    }
+
+    Spacer(Modifier.height(24.dp))
+    Text("Meals you love", style = MaterialTheme.typography.titleMedium)
+    Spacer(Modifier.height(4.dp))
+    Text("Boosted in your weekly plan, and guaranteed to show up at least once.", style = MaterialTheme.typography.bodySmall)
+    Spacer(Modifier.height(8.dp))
+    val loved = profile.lovedFoodIdSet
+    val hated = profile.hatedFoodIdSet
+    val safeItems = FoodDatabase.items.filter { it.allergens.none(allergens::contains) }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.height(180.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(safeItems) { food ->
+            FilterChip(
+                selected = loved.contains(food.id),
+                onClick = { vm.toggleLovedFood(food.id) },
+                label = { Text(food.name) }
+            )
+        }
+    }
+
+    Spacer(Modifier.height(20.dp))
+    Text("Meals you hate", style = MaterialTheme.typography.titleMedium)
+    Spacer(Modifier.height(4.dp))
+    Text("Never suggested, in the daily planner or the weekly plan.", style = MaterialTheme.typography.bodySmall)
+    Spacer(Modifier.height(8.dp))
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.height(180.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(safeItems) { food ->
+            FilterChip(
+                selected = hated.contains(food.id),
+                onClick = { vm.toggleHatedFood(food.id) },
+                label = { Text(food.name) }
+            )
         }
     }
 }

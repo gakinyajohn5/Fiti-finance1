@@ -2,6 +2,7 @@ package com.fitifinance.comrade.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.fitifinance.comrade.engine.AllergenTag
 
 enum class LivingSituation {
     IN_CAMPUS_NO_COOKING,
@@ -56,6 +57,11 @@ data class UserProfile(
     val partyFrequency: PartyFrequency = PartyFrequency.NOT_APPLICABLE,
     val favoriteDrinkIds: String = "", // comma-separated DrinkItem ids
 
+    // Step 5 — Food preferences & allergies (drives weekly meal planner)
+    val lovedFoodIds: String = "",   // comma-separated FoodItem ids, boosted in weekly plans
+    val hatedFoodIds: String = "",   // comma-separated FoodItem ids, never suggested
+    val allergyTags: String = "",    // comma-separated AllergenTag names, hard-excluded everywhere
+
     // Budgeting
     val dailyMealBudgetKes: Double = 300.0,
     val monthlyBudgetKes: Double = 12000.0,
@@ -66,4 +72,12 @@ data class UserProfile(
     val partyDashboardEnabled: Boolean get() = partyStatus != PartyStatus.NEVER
     val canCook: Boolean get() = livingSituation != LivingSituation.IN_CAMPUS_NO_COOKING
     val hasBulkCooking: Boolean get() = livingSituation == LivingSituation.OFF_CAMPUS_BEDSITTER
+
+    private fun String.toIdSet(): Set<String> =
+        split(",").map { it.trim() }.filter { it.isNotBlank() }.toSet()
+
+    val lovedFoodIdSet: Set<String> get() = lovedFoodIds.toIdSet()
+    val hatedFoodIdSet: Set<String> get() = hatedFoodIds.toIdSet()
+    val allergenSet: Set<AllergenTag> get() = allergyTags.toIdSet()
+        .mapNotNull { runCatching { AllergenTag.valueOf(it) }.getOrNull() }.toSet()
 }

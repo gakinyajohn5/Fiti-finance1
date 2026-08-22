@@ -18,7 +18,7 @@ import com.fitifinance.comrade.viewmodel.MealsViewModel
 import com.fitifinance.comrade.viewmodel.fitiViewModel
 
 @Composable
-fun MealPlannerScreen(onBack: () -> Unit) {
+fun MealPlannerScreen(onBack: () -> Unit, onOpenWeeklyPlan: () -> Unit = {}) {
     val vm: MealsViewModel = fitiViewModel()
     val state by vm.uiState.collectAsState()
     var commandText by remember { mutableStateOf("") }
@@ -29,6 +29,9 @@ fun MealPlannerScreen(onBack: () -> Unit) {
                 title = { Text("Meal Planner — ${state.currentWindowLabel}") },
                 navigationIcon = {
                     IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, contentDescription = "Back") }
+                },
+                actions = {
+                    TextButton(onClick = onOpenWeeklyPlan) { Text("This Week") }
                 }
             )
         }

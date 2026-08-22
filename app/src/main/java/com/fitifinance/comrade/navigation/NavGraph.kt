@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fitifinance.comrade.ui.dashboard.DashboardScreen
 import com.fitifinance.comrade.ui.meals.MealPlannerScreen
+import com.fitifinance.comrade.ui.meals.WeeklyMealPlanScreen
 import com.fitifinance.comrade.ui.nightout.NightOutScreen
 import com.fitifinance.comrade.ui.onboarding.OnboardingWizard
 import com.fitifinance.comrade.ui.savings.SavingsJarsScreen
@@ -16,6 +17,7 @@ object Routes {
     const val ONBOARDING = "onboarding"
     const val DASHBOARD = "dashboard"
     const val MEALS = "meals"
+    const val WEEKLY_MEAL_PLAN = "weekly_meal_plan"
     const val NIGHT_OUT = "night_out"
     const val SAVINGS = "savings"
     const val TRANSACTIONS = "transactions"
@@ -45,7 +47,14 @@ fun FitiNavGraph(startDestination: String) {
         }
 
         composable(Routes.MEALS) {
-            MealPlannerScreen(onBack = { navController.popBackStack() })
+            MealPlannerScreen(
+                onBack = { navController.popBackStack() },
+                onOpenWeeklyPlan = { navController.navigate(Routes.WEEKLY_MEAL_PLAN) }
+            )
+        }
+
+        composable(Routes.WEEKLY_MEAL_PLAN) {
+            WeeklyMealPlanScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Routes.NIGHT_OUT) {

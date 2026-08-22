@@ -38,7 +38,13 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "fiti_finance.db"
-                ).build().also { INSTANCE = it }
+                )
+                    // Pre-release schema is still evolving (e.g. new UserProfile
+                    // columns for food preferences/allergies) — rebuild rather
+                    // than crash on mismatch. Switch to real Migrations once
+                    // this ships and existing user data must be preserved.
+                    .fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
             }
     }
 }
