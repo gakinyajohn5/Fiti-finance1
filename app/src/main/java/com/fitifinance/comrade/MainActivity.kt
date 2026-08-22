@@ -68,7 +68,21 @@ class MainActivity : FragmentActivity() {
                 ActivityResultContracts.RequestMultiplePermissions()
             ) { /* Results observed lazily; features simply stay dormant until granted. */ }
 
+            // Guards against launching the permission dialog more than once per
+            // Activity instance. LaunchedEffect(Unit) should already only fire
+            // once, but if anything upstream (lock-state changes, recomposition
+            // from a structural change) causes this composable to be disposed
+            // and recreated, a bare LaunchedEffect(Unit) would fire again and
+            // rapidly exhaust Android's internal request-code range, crashing
+            // with "Can only use lower 16 bits for requestCode". rememberSaveable
+            // makes the guard survive recomposition, so the dialog only ever
+            // launches once for the lifetime of this Activity instance.
+            var hasRequestedPermissions by rememberSaveable { mutableStateOf(false) }
+
             LaunchedEffect(Unit) {
+                if (hasRequestedPermissions) return@LaunchedEffect
+                hasRequestedPermissions = true
+
                 val permissions = mutableListOf(
                     Manifest.permission.RECEIVE_SMS,
                     Manifest.permission.READ_SMS,
