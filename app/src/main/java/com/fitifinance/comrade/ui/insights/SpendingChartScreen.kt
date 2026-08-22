@@ -1,4 +1,5 @@
 package com.fitifinance.comrade.ui.insights
+import androidx.compose.ui.text.drawText
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*

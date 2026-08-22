@@ -1,4 +1,5 @@
 package com.fitifinance.comrade.security
+import kotlinx.coroutines.flow.first
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
