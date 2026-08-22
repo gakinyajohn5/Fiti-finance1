@@ -90,4 +90,37 @@ class FinanceRepository(private val db: AppDatabase) {
             adjustedDailyFoodCapKes = adjustedDailyCap
         )
     }
+
+    // ---- Recipient rules ("always categorize X as Y") ----
+    fun observeRecipients(): Flow<List<Recipient>> = db.recipientDao().observeAll()
+    suspend fun deleteRecipient(fullName: String) = db.recipientDao().deleteByName(fullName)
+
+    // ---- CSV export ----
+    suspend fun buildTransactionsCsv(): String {
+        val rows = db.transactionDao().getAllOnce()
+        val header = "Date,Amount (KES),Category,Source,Counterparty,Note"
+        val body = rows.joinToString("\n") { txn ->
+            val date = java.time.Instant.ofEpochMilli(txn.timestampMillis)
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalDateTime()
+            listOf(
+                date.toString(),
+                txn.amountKes.toString(),
+                txn.category.name,
+                txn.source.name,
+                txn.counterparty.replace(",", " "),
+                (txn.note ?: "").replace(",", " ").replace("\n", " ")
+            ).joinToString(",")
+        }
+        return "$header\n$body"
+    }
+
+    // ---- Reset / clear all local data ----
+    suspend fun clearAllData() {
+        db.transactionDao().deleteAll()
+        db.mealLogDao().deleteAll()
+        db.drinkLogDao().deleteAll()
+        db.savingsJarDao().deleteAll()
+        db.recipientDao().deleteAll()
+    }
 }
