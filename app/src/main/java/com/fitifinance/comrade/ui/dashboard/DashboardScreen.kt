@@ -20,7 +20,9 @@ fun DashboardScreen(
     onOpenMeals: () -> Unit,
     onOpenNightOut: () -> Unit,
     onOpenSavings: () -> Unit,
-    onOpenTransactions: () -> Unit
+    onOpenTransactions: () -> Unit,
+    onOpenSpendingChart: () -> Unit,
+    onOpenSecuritySettings: () -> Unit
 ) {
     val vm: DashboardViewModel = fitiViewModel()
     val state by vm.uiState.collectAsState()
@@ -31,11 +33,22 @@ fun DashboardScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Text("Habari, Comrade 👋", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        Text(
-            "Mode: ${theme.name.lowercase().replaceFirstChar { it.uppercase() }}",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text("Habari, Comrade 👋", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(
+                    "Mode: ${theme.name.lowercase().replaceFirstChar { it.uppercase() }}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            IconButton(onClick = onOpenSecuritySettings) {
+                Icon(Icons.Filled.Lock, contentDescription = "App Lock settings")
+            }
+        }
 
         Spacer(Modifier.height(12.dp))
         ThemeModeSwitcher(current = theme, onSelect = vm::previewThemeMode)
@@ -61,6 +74,11 @@ fun DashboardScreen(
             Icons.Filled.Receipt, "Transactions",
             if (state.pendingPromptCount > 0) "${state.pendingPromptCount} need categorizing" else "All caught up",
             onOpenTransactions
+        )
+        DashboardTile(
+            Icons.Filled.BarChart, "Spending Insights",
+            "Daily and weekly spend charts",
+            onOpenSpendingChart
         )
     }
 }

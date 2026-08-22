@@ -22,6 +22,8 @@ class FitiViewModelFactory(private val app: FitiApplication) : ViewModelProvider
             NightOutViewModel::class.java -> NightOutViewModel(app.repository) as T
             SavingsViewModel::class.java -> SavingsViewModel(app.repository, app.adviceEngine) as T
             TransactionsViewModel::class.java -> TransactionsViewModel(app.repository) as T
+            LockViewModel::class.java -> LockViewModel(app.securityPreferences) as T
+            SpendingChartViewModel::class.java -> SpendingChartViewModel(app.repository) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
