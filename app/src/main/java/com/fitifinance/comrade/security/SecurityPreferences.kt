@@ -68,6 +68,6 @@ class SecurityPreferences(private val context: Context) {
     }
 
     private suspend fun <T> Flow<T>.collectOnce(action: (T) -> Unit) {
-        kotlinx.coroutines.flow.first { action(it); true }
+        first { action(it); true }
     }
 }
