@@ -6,6 +6,7 @@ import com.fitifinance.comrade.engine.AiAdviceEngine
 import com.fitifinance.comrade.engine.LocalHeuristicAdviceEngine
 import com.fitifinance.comrade.engine.LocationContextEngine
 import com.fitifinance.comrade.repository.FinanceRepository
+import com.fitifinance.comrade.security.SecurityPreferences
 
 class FitiApplication : Application() {
 
@@ -14,6 +15,8 @@ class FitiApplication : Application() {
     lateinit var repository: FinanceRepository
         private set
     lateinit var locationContextEngine: LocationContextEngine
+        private set
+    lateinit var securityPreferences: SecurityPreferences
         private set
 
     /** Defaults to the on-device engine so nothing requires network access out of the box. */
@@ -24,5 +27,6 @@ class FitiApplication : Application() {
         database = AppDatabase.getInstance(this)
         repository = FinanceRepository(database)
         locationContextEngine = LocationContextEngine(this)
+        securityPreferences = SecurityPreferences(this)
     }
 }

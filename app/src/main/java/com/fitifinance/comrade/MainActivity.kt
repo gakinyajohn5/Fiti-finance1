@@ -3,18 +3,26 @@ package com.fitifinance.comrade
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.fitifinance.comrade.engine.ThemeMode
 import com.fitifinance.comrade.navigation.FitiNavGraph
 import com.fitifinance.comrade.navigation.Routes
+import com.fitifinance.comrade.ui.security.LockScreen
 import com.fitifinance.comrade.ui.theme.FitiFinanceTheme
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+/**
+ * Extends FragmentActivity (rather than plain ComponentActivity) because
+ * androidx.biometric's BiometricPrompt requires a FragmentActivity host.
+ */
+class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +30,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             val app = application as FitiApplication
             val scope = rememberCoroutineScope()
+
+            // ---- App Lock: re-lock every time the app leaves the foreground ----
+            val lockEnabled by app.securityPreferences.isLockEnabled.collectAsState(initial = false)
+            var isUnlocked by rememberSaveable { mutableStateOf(false) }
+            val lifecycleOwner = LocalLifecycleOwner.current
+            DisposableEffect(lifecycleOwner, lockEnabled) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_STOP && lockEnabled) {
+                        isUnlocked = false
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+            }
 
             // ---- Runtime permissions: SMS parser + location context engine ----
             val permissionLauncher = rememberLauncherForActivityResult(
@@ -52,7 +74,11 @@ class MainActivity : ComponentActivity() {
 
             FitiFinanceTheme(themeMode = themeMode) {
                 startDestination?.let { destination ->
-                    FitiNavGraph(startDestination = destination)
+                    if (lockEnabled && !isUnlocked) {
+                        LockScreen(onUnlocked = { isUnlocked = true })
+                    } else {
+                        FitiNavGraph(startDestination = destination)
+                    }
                 }
             }
         }

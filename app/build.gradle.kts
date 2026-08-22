@@ -89,6 +89,9 @@ dependencies {
     // DataStore (for onboarding/session flags)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
+    // App Lock (PIN + fingerprint/face biometric unlock)
+    implementation("androidx.biometric:biometric:1.1.0")
+
     // Location / Geofencing
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")

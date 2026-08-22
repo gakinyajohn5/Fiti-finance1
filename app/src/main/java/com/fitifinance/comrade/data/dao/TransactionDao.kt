@@ -23,4 +23,19 @@ interface TransactionDao {
 
     @Query("SELECT COALESCE(SUM(amountKes), 0) FROM transactions WHERE category = :category AND timestampMillis BETWEEN :startMillis AND :endMillis")
     suspend fun totalForCategoryBetween(category: String, startMillis: Long, endMillis: Long): Double
+
+    /** One row per calendar day with any spend, for the daily spend chart. */
+    @Query(
+        """
+        SELECT (timestampMillis / 86400000) AS dayBucket, SUM(amountKes) AS total
+        FROM transactions
+        WHERE timestampMillis BETWEEN :startMillis AND :endMillis
+        GROUP BY dayBucket
+        ORDER BY dayBucket ASC
+        """
+    )
+    fun observeDailyTotalsBetween(startMillis: Long, endMillis: Long): Flow<List<DailySpendBucket>>
 }
+
+/** Epoch-day bucket (UTC) plus the total spent within it. */
+data class DailySpendBucket(val dayBucket: Long, val total: Double)
