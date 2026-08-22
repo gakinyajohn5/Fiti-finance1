@@ -2,15 +2,16 @@ package com.fitifinance.comrade.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// ---- Campus Mode — refined navy fintech, light ----
-val CampusPrimary = Color(0xFF1E3A5F)
-val CampusPrimaryContainer = Color(0xFFDCE7F5)
-val CampusSecondary = Color(0xFF64748B)
-val CampusBackground = Color(0xFFF3F5F9)
+// ---- Campus Mode — Fiti brand forest green + gold, light ----
+val CampusPrimary = Color(0xFF0F5132)
+val CampusPrimaryContainer = Color(0xFFCDEEE0)
+val CampusSecondary = Color(0xFF12603D)
+val CampusBackground = Color(0xFFF5F1E8)
 val CampusSurface = Color(0xFFFFFFFF)
-val CampusSurfaceVariant = Color(0xFFE7ECF3)
+val CampusSurfaceVariant = Color(0xFFE1E8E3)
 val CampusOnPrimary = Color(0xFFFFFFFF)
 val CampusOnSurface = Color(0xFF14202E)
+val CampusAccentGold = Color(0xFFD4AF37) // from the Fiti Finance logo's arrow + lettering
 
 // ---- Bar Mode — AMOLED dark, emerald-forward fintech ----
 val BarPrimary = Color(0xFF10B981)

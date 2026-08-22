@@ -13,6 +13,7 @@ private val CampusScheme = lightColorScheme(
     primary = CampusPrimary,
     primaryContainer = CampusPrimaryContainer,
     secondary = CampusSecondary,
+    tertiary = CampusAccentGold,
     background = CampusBackground,
     surface = CampusSurface,
     surfaceVariant = CampusSurfaceVariant,
