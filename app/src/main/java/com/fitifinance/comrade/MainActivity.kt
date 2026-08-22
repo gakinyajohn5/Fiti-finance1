@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
             var startDestination by remember { mutableStateOf<String?>(null) }
             LaunchedEffect(Unit) {
                 val profile = app.repository.getProfile()
-                startDestination = if (profile.onboardingComplete) Routes.DASHBOARD else Routes.ONBOARDING
+                startDestination = if (profile.onboardingComplete) Routes.MAIN else Routes.ONBOARDING
             }
 
             val themeMode by app.locationContextEngine.currentMode.collectAsState()
