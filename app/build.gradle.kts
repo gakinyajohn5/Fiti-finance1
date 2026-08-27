@@ -66,6 +66,14 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation("androidx.activity:activity-compose:1.9.1")
+    // Pin fragment explicitly: androidx.biometric:1.1.0 transitively pulls in an
+    // old androidx.fragment version whose FragmentActivity.checkForValidRequestCode()
+    // still enforces a strict 16-bit request-code range. Newer activity-compose
+    // generates request codes outside that range, causing
+    // "IllegalArgumentException: Can only use lower 16 bits for requestCode" on
+    // the very first permission launch. Pinning fragment to a current release
+    // removes that stale check.
+    implementation("androidx.fragment:fragment-ktx:1.8.2")
 
     // Compose
     implementation("androidx.compose.ui:ui")
