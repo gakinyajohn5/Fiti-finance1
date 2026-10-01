@@ -6,6 +6,7 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.fitifinance.comrade.engine.ThemeMode
 
@@ -20,6 +21,24 @@ private val CampusScheme = lightColorScheme(
     onPrimary = CampusOnPrimary,
     onSurface = CampusOnSurface,
     error = WarningRed
+)
+
+private val MidnightScheme = darkColorScheme(
+    primary = MidnightPrimary,
+    onPrimary = Color.White,
+    primaryContainer = MidnightPrimaryContainer,
+    onPrimaryContainer = MidnightOnSurface,
+    secondary = MidnightSecondary,
+    onSecondary = MidnightBackground,
+    tertiary = MidnightTertiary,
+    background = MidnightBackground,
+    onBackground = MidnightOnSurface,
+    surface = MidnightSurface,
+    onSurface = MidnightOnSurface,
+    surfaceVariant = MidnightSurfaceVariant,
+    onSurfaceVariant = MidnightOnSurfaceMuted,
+    outline = MidnightOutline,
+    error = MidnightError
 )
 
 private val BarScheme = darkColorScheme(
@@ -61,8 +80,9 @@ val FitiShapes = Shapes(
  * emerald fintech accent), or Kibanda (warm amber/green, light).
  */
 @Composable
-fun FitiFinanceTheme(themeMode: ThemeMode = ThemeMode.CAMPUS, content: @Composable () -> Unit) {
+fun FitiFinanceTheme(themeMode: ThemeMode = ThemeMode.MIDNIGHT, content: @Composable () -> Unit) {
     val colorScheme = when (themeMode) {
+        ThemeMode.MIDNIGHT -> MidnightScheme
         ThemeMode.CAMPUS -> CampusScheme
         ThemeMode.BAR -> BarScheme
         ThemeMode.KIBANDA -> KibandaScheme

@@ -38,3 +38,16 @@ val KibandaOnSurface = Color(0xFF2B2118)
 val WarningRed = Color(0xFFEF4444)
 val SuccessGreen = Color(0xFF10B981)
 val NeutralMuted = Color(0xFF64748B)
+
+// ---- Midnight Mode - deep navy, glass surfaces, electric blue/cyan accents (default) ----
+val MidnightBackground = Color(0xFF050B1A)
+val MidnightSurface = Color(0xFF0B1630)
+val MidnightSurfaceVariant = Color(0xFF14213F)
+val MidnightPrimary = Color(0xFF2F6BFF)          // electric blue
+val MidnightPrimaryContainer = Color(0xFF12275C)
+val MidnightSecondary = Color(0xFF22D3EE)        // neon cyan
+val MidnightTertiary = Color(0xFF7DD3FC)
+val MidnightOnSurface = Color(0xFFE6EEFF)
+val MidnightOnSurfaceMuted = Color(0xFF93A4C7)
+val MidnightOutline = Color(0xFF2A3A63)
+val MidnightError = Color(0xFFFF6B7A)

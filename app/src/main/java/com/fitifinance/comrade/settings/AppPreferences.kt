@@ -19,7 +19,7 @@ data class AppSettingsState(
     val notifyPendingCategorization: Boolean = true,
     val notifyBudgetThreshold: Boolean = true,
     val themeAutoMode: Boolean = true, // true = location-driven, false = manual pick below
-    val manualThemeMode: ThemeMode = ThemeMode.CAMPUS
+    val manualThemeMode: ThemeMode = ThemeMode.MIDNIGHT
 )
 
 /** Home for every toggle/preference in the Settings area that isn't the PIN itself. */
@@ -43,8 +43,8 @@ class AppPreferences(private val context: Context) {
             notifyPendingCategorization = prefs[Keys.NOTIFY_PENDING_CATEGORIZATION] ?: true,
             notifyBudgetThreshold = prefs[Keys.NOTIFY_BUDGET_THRESHOLD] ?: true,
             themeAutoMode = prefs[Keys.THEME_AUTO_MODE] ?: true,
-            manualThemeMode = (prefs[Keys.MANUAL_THEME_MODE] ?: ThemeMode.CAMPUS.name)
-                .let { runCatching { ThemeMode.valueOf(it) }.getOrDefault(ThemeMode.CAMPUS) }
+            manualThemeMode = (prefs[Keys.MANUAL_THEME_MODE] ?: ThemeMode.MIDNIGHT.name)
+                .let { runCatching { ThemeMode.valueOf(it) }.getOrDefault(ThemeMode.MIDNIGHT) }
         )
     }
 

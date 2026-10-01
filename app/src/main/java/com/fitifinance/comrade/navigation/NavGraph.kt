@@ -3,6 +3,7 @@ package com.fitifinance.comrade.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,9 +44,15 @@ object Routes {
     const val ABOUT = "about"
 }
 
-/** The four tabs living behind the bottom nav bar, on their own inner NavHost. */
+/**
+ * Destinations on the inner NavHost. The bottom bar shows Home, Analytics, Transfers
+ * and Profile; Meals, Night Out and Savings are reached from the dashboard quick actions.
+ */
 object MainTabs {
     const val DASHBOARD = "tab_dashboard"
+    const val ANALYTICS = "tab_analytics"
+    const val TRANSFERS = "tab_transfers"
+    const val PROFILE = "tab_profile"
     const val MEALS = "tab_meals"
     const val NIGHT_OUT = "tab_night_out"
     const val SAVINGS = "tab_savings"
@@ -68,9 +75,7 @@ fun FitiNavGraph(startDestination: String) {
         composable(Routes.MAIN) {
             MainTabScaffold(
                 onOpenWeeklyPlan = { navController.navigate(Routes.WEEKLY_MEAL_PLAN) },
-                onOpenTransactions = { navController.navigate(Routes.TRANSACTIONS) },
-                onOpenSpendingChart = { navController.navigate(Routes.SPENDING_CHART) },
-                onOpenSettings = { navController.navigate(Routes.SETTINGS_HUB) }
+                onNavigateOuter = { route -> navController.navigate(route) }
             )
         }
 
@@ -130,19 +135,25 @@ fun FitiNavGraph(startDestination: String) {
 }
 
 /**
- * Hosts the bottom nav bar plus its own inner NavHost for the four tabs.
- * Anything a tab needs to reach outside the tab set (Weekly Meal Plan, full
- * Transactions history) bubbles up via the callbacks passed in, so it opens
- * as a full-screen push on the OUTER NavHost rather than living inside a tab.
+ * Hosts the bottom nav bar plus its own inner NavHost for the tabs. Anything that
+ * must open full-screen (Weekly Meal Plan, individual settings pages) bubbles up via
+ * the callbacks so it lands on the OUTER NavHost rather than inside a tab.
  */
 @Composable
 private fun MainTabScaffold(
     onOpenWeeklyPlan: () -> Unit,
-    onOpenTransactions: () -> Unit,
-    onOpenSpendingChart: () -> Unit,
-    onOpenSettings: () -> Unit
+    onNavigateOuter: (String) -> Unit
 ) {
     val tabNavController = rememberNavController()
+
+    // Same behaviour as tapping a bottom-bar tab: one copy per tab, state preserved.
+    val goToTab: (String) -> Unit = { route ->
+        tabNavController.navigate(route) {
+            popUpTo(tabNavController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
     Scaffold(
         bottomBar = { FitiBottomNavBar(tabNavController) }
@@ -154,28 +165,49 @@ private fun MainTabScaffold(
         ) {
             composable(MainTabs.DASHBOARD) {
                 DashboardScreen(
-                    onOpenMeals = { tabNavController.navigate(MainTabs.MEALS) },
-                    onOpenNightOut = { tabNavController.navigate(MainTabs.NIGHT_OUT) },
-                    onOpenSavings = { tabNavController.navigate(MainTabs.SAVINGS) },
-                    onOpenTransactions = onOpenTransactions,
-                    onOpenSpendingChart = onOpenSpendingChart,
-                    onOpenSettings = onOpenSettings
+                    onOpenMeals = { goToTab(MainTabs.MEALS) },
+                    onOpenNightOut = { goToTab(MainTabs.NIGHT_OUT) },
+                    onOpenSavings = { goToTab(MainTabs.SAVINGS) },
+                    onOpenTransactions = { goToTab(MainTabs.TRANSFERS) },
+                    onOpenSpendingChart = { goToTab(MainTabs.ANALYTICS) },
+                    onOpenSettings = { goToTab(MainTabs.PROFILE) }
+                )
+            }
+
+            composable(MainTabs.ANALYTICS) {
+                SpendingChartScreen(onBack = { goToTab(MainTabs.DASHBOARD) })
+            }
+
+            composable(MainTabs.TRANSFERS) {
+                TransactionsScreen(onBack = { goToTab(MainTabs.DASHBOARD) })
+            }
+
+            composable(MainTabs.PROFILE) {
+                SettingsHubScreen(
+                    onBack = { goToTab(MainTabs.DASHBOARD) },
+                    onOpenAppLock = { onNavigateOuter(Routes.SECURITY_SETTINGS) },
+                    onOpenBudgets = { onNavigateOuter(Routes.BUDGET_SETTINGS) },
+                    onOpenNotifications = { onNavigateOuter(Routes.NOTIFICATION_SETTINGS) },
+                    onOpenDataPrivacy = { onNavigateOuter(Routes.DATA_PRIVACY_SETTINGS) },
+                    onOpenAppearance = { onNavigateOuter(Routes.APPEARANCE_SETTINGS) },
+                    onOpenProfile = { onNavigateOuter(Routes.PROFILE_SETTINGS) },
+                    onOpenAbout = { onNavigateOuter(Routes.ABOUT) }
                 )
             }
 
             composable(MainTabs.MEALS) {
                 MealPlannerScreen(
-                    onBack = { tabNavController.navigate(MainTabs.DASHBOARD) },
+                    onBack = { goToTab(MainTabs.DASHBOARD) },
                     onOpenWeeklyPlan = onOpenWeeklyPlan
                 )
             }
 
             composable(MainTabs.NIGHT_OUT) {
-                NightOutScreen(onBack = { tabNavController.navigate(MainTabs.DASHBOARD) })
+                NightOutScreen(onBack = { goToTab(MainTabs.DASHBOARD) })
             }
 
             composable(MainTabs.SAVINGS) {
-                SavingsJarsScreen(onBack = { tabNavController.navigate(MainTabs.DASHBOARD) })
+                SavingsJarsScreen(onBack = { goToTab(MainTabs.DASHBOARD) })
             }
         }
     }
