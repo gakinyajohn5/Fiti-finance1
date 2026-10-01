@@ -51,6 +51,7 @@ fun AppearanceSettingsScreen(onBack: () -> Unit) {
             Text("Pick a mode", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             listOf(
+                ThemeMode.MIDNIGHT to ("Midnight" to "Deep navy glass with electric blue accents"),
                 ThemeMode.CAMPUS to ("Campus" to "Forest green and gold, calm daytime look"),
                 ThemeMode.BAR to ("Bar" to "AMOLED dark, emerald fintech look"),
                 ThemeMode.KIBANDA to ("Kibanda" to "Warm amber and green")

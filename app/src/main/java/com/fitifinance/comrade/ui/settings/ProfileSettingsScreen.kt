@@ -1,6 +1,8 @@
 package com.fitifinance.comrade.ui.settings
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -24,7 +26,7 @@ fun ProfileSettingsScreen(onBack: () -> Unit) {
     val profile = state.profile
     var saved by remember { mutableStateOf(false) }
 
-    Column(Modifier.fillMaxSize().padding(20.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, contentDescription = "Back") }
             Text("Profile", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
@@ -32,6 +34,23 @@ fun ProfileSettingsScreen(onBack: () -> Unit) {
         Spacer(Modifier.height(8.dp))
         Text("These answers drive which dashboards and suggestions you see.", style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(20.dp))
+
+        SectionLabel("Your name")
+        // Local state so typing never fights the database round-trip; it is only
+        // seeded from the saved profile while still empty (the profile loads async).
+        var name by remember { mutableStateOf("") }
+        LaunchedEffect(profile.name) { if (name.isBlank()) name = profile.name }
+        OutlinedTextField(
+            value = name,
+            onValueChange = {
+                name = it.take(40)
+                saved = false
+                vm.saveProfileBasics(profile.copy(name = name))
+            },
+            label = { Text("First name") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         SectionLabel("Living situation")
         ChipGroup(

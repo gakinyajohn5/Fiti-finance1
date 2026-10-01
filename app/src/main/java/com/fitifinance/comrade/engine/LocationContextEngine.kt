@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 
 /** Drives dynamic dashboard theming based on detected surroundings. */
-enum class ThemeMode { CAMPUS, BAR, KIBANDA }
+enum class ThemeMode { MIDNIGHT, CAMPUS, BAR, KIBANDA }
 
 /** A simplified POI used for geofence-style proximity checks (Google Places / OSM in production). */
 data class ContextPoi(
@@ -30,7 +30,7 @@ data class ContextPoi(
  */
 class LocationContextEngine(private val context: Context) {
 
-    private val _currentMode = MutableStateFlow(ThemeMode.CAMPUS)
+    private val _currentMode = MutableStateFlow(ThemeMode.MIDNIGHT)
     val currentMode: StateFlow<ThemeMode> = _currentMode
 
     private val fusedLocationClient by lazy {
@@ -53,7 +53,7 @@ class LocationContextEngine(private val context: Context) {
         val match = pois.firstOrNull { poi ->
             distanceMeters(location.latitude, location.longitude, poi.latitude, poi.longitude) <= poi.radiusMeters
         }
-        _currentMode.value = match?.mode ?: ThemeMode.CAMPUS
+        _currentMode.value = match?.mode ?: ThemeMode.MIDNIGHT
     }
 
     /**
